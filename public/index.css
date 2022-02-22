@@ -1,0 +1,21 @@
+
+  
+  .guilds {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background: #f3f3f3;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+
+
+  .guild {
+    margin-top: 1rem;
+    margin-bottom: -1rem;
+  }
+
+  

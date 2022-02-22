@@ -4,8 +4,13 @@ const schema = new Schema({
   userId: String,
   guilds: [
       {
-          name: String,
-          gid: String,
+        id: String,
+        name: String,
+        icon: String,
+        owner: Boolean,
+        permissions: String,
+        features: Array,
+        permissions_new: String
       }
   ]
 })

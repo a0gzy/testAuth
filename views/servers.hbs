@@ -1,21 +1,19 @@
 <h2>Servers</h2>
 
 {{#if hyks.length}}
-
+<ul class="row">
     {{#each hyks}}
-        <li class="guilds">
-            <label>
-                {{#if had}}
-                <input type="checkbox" checked name="completed">
-                <span class="completed">{{this.name}}</span>
-                {{else}}
-                <input type="checkbox" name="completed">
-                <span>{{this.name}}</span>
-                {{/if}}
-            </label>
+        <li class="col s4">
+            <form action="/edit" method="POST"> 
+                <label class="guilds">
+                    <input type="hidden" value="{{id}}" name="id">
+                    <span>{{name}}</span>
+                    <button class="btn waves-effect waves-light" type="submit" name="action">edit</button>
+                </label>
+           </form>
         </li>
     {{/each}}
-
+</ul>
 {{else}}
 <p>Not connected</p>
 {{/if}}
