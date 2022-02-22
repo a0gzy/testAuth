@@ -1,0 +1,18 @@
+ <nav class="blue">
+    <div class="nav-wrapper">
+      <a href="/" class="brand-logo">Hyk</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+
+        {{#if isIndex}}
+        <li class="active"><a href="/">Main Page</a></li>
+        {{else}}
+        <li><a href="/">Main Page</a></li>
+        {{/if}}
+
+        <li><a href="/servers">Servers</a></li>
+        <li><a href="https://discord.com/api/oauth2/authorize?client_id=945450005911732304&redirect_uri=http%3A%2F%2Flocalhost%3A50451%2Fcallback&response_type=code&scope=identify%20email%20guilds">Auth</a></li>
+        
+    
+      </ul>
+    </div>
+  </nav>

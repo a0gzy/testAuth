@@ -1,0 +1,21 @@
+<h2>Servers</h2>
+
+{{#if hyks.length}}
+
+    {{#each hyks}}
+        <li class="guilds">
+            <label>
+                {{#if had}}
+                <input type="checkbox" checked name="completed">
+                <span class="completed">{{this.name}}</span>
+                {{else}}
+                <input type="checkbox" name="completed">
+                <span>{{this.name}}</span>
+                {{/if}}
+            </label>
+        </li>
+    {{/each}}
+
+{{else}}
+<p>Not connected</p>
+{{/if}}
