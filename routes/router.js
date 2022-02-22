@@ -5,7 +5,8 @@ const fetch = require('node-fetch');
 const { clientId,clientSecret,port} = require('../config.json');
 const redirect = 'http://localhost:50451/callback';
 
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const { db } = require('../models/HykModel');
 //const cookieParser = require('./index.js')
 
 const router = Router()
@@ -25,20 +26,43 @@ router.get('/', async (req, res) => {
   }) 
 })
 
-router.get('/servers',async (req, res) => {
+router.get('/servers', async (req, res) => {
+  try {
+    let userid = req.cookies.userid
+
+    //const hyks = await HykModel.find({})
+    const hyks = await HykModel.findOne({ userId: userid })
+    if (hyks == null) {
+      return res.redirect('/')
+    }
+    const gilds = await hyks.guilds
+
+    //console.log(gilds)
+
+    res.render('servers', {
+      title: 'Server list',
+      isServers: true,
+      hyks: gilds
+    })
+  } catch (error) {
+    console.error(error);
+  }
+})
+
+/* router.get('/servers/',async (req, res) => {
   let userid = req.cookies.userid
 
   //const hyks = await HykModel.find({})
   const hyks = await HykModel.findOne({userId: userid})
   const gilds = hyks.guilds
 
-  console.log(gilds)
+  //console.log(gilds)
  
   res.render('servers', {
     title: 'Server list',
     hyks: gilds
   })
-})
+}) */
 
 router.get('/callback', async (req, res) => {
   const code = req.query.code;
@@ -61,7 +85,7 @@ router.get('/callback', async (req, res) => {
       });
 
       const oauthData = await oauthResult.json();
-      console.log(oauthData);
+     // console.log(oauthData);
 
       let userResult = await fetch('https://discord.com/api/users/@me', {
         headers: {
@@ -71,7 +95,7 @@ router.get('/callback', async (req, res) => {
 
       userResult = await userResult.json()
 
-      console.log(userResult);
+     // console.log(userResult);
 
       const userGuildsResult = await fetch('https://discord.com/api/users/@me/guilds', {
         headers: {
@@ -80,38 +104,33 @@ router.get('/callback', async (req, res) => {
       });
 
       guilds = await userGuildsResult.json();
+      //console.log(guilds)
 
       let userid = userResult.id
 
       //Cookie
       res.cookie('userid', userid)
 
-
-
-
-
-      let hyks = []
-      for (let guild in guilds) {
-        let gild = {
-          name: guilds[guild].name,
-          gid: guilds[guild].id
-        }
-        hyks.push(gild)
-      }
-      // console.log(hyks)
       const inBase = await HykModel.findOne({ userId: userid })
       if (inBase) {
-        HykModel.updateOne({ userId: userid }, { $set: { guilds: hyks } })
+        await HykModel.updateOne({ userId: userid }, { $set: { guilds: guilds } })
       } else {
         const hyk = new HykModel({
           userId: userid,
-          guilds: hyks
+          guilds: guilds
         })
         // console.log(hyk)
         await hyk.save()
       }
-
-
+  
+     /*  const inBase = await HykModel.findOne({ userId: userid })
+      await inBase.remove();
+      const hyk = new HykModel({
+        userId: userid,
+        guilds: guilds
+      })
+      await hyk.save()
+ */
 
       res.redirect('/servers')
     } catch (error) {
@@ -120,23 +139,38 @@ router.get('/callback', async (req, res) => {
   }
 });
 
-/*
-router.post('/create', async (req, res) => {
-  const todo = new Todo({
-    title: req.body.title
-  })
 
-  await todo.save()
-  res.redirect('/')
+
+router.post('/back', async (req, res) => {
+
+  res.redirect('/servers')
 })
 
-router.post('/complete', async (req, res) => {
-  const todo = await Todo.findById(req.body.id)
+router.post('/edit', async (req, res) => {
+  try {
+    //console.log(req.body)
+    
+    const hyks = await HykModel.findOne({id:req.body.id })
+    //console.log(hyks)
+    let gui
+    for (let guild in hyks.guilds) {
+      if(hyks.guilds[guild].id == req.body.id){
+        gui = hyks.guilds[guild]
+        //console.log(gui)
+      }
+    }
 
-  todo.completed = !!req.body.completed
-  await todo.save()
+    //res.redirect('/'+hyks)
+   // console.log(hyks)
+     res.render('edit', {
+      title: 'Edit Server',
+      guild: gui
+    }) 
+  } catch (error) {
+    console.error(error);
+  }
 
-  res.redirect('/')
-}) */
+  //res.redirect('/')
+}) 
 
 module.exports = router
